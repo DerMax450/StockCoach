@@ -13,6 +13,10 @@
   - Install required libraries using pip:
     ```bash
     pip3 install matplotlib
+    pip3 install pandas
+    pip3 install plotly
+    pip3 install dash
+    pip3 install yfinance
     ```
     *(Add any other necessary libraries as needed.)*
 
