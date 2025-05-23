@@ -1,4 +1,5 @@
-
+# Calculation Methods
+# Author: derMax450
 
 def calculate_indicators(data, short_window=50, long_window=200):
     data[f'SMA_{short_window}'] = data['Close'].rolling(window=short_window).mean()

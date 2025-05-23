@@ -1,8 +1,14 @@
+# Plot the figures with plotly, recently updatin to make ot live with "dash"
+# Author: derMax450
+
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
 
-# ➤ Add Median Line
+# Add Median Line
 def add_median(fig, data, window=50):
     label = f'Median_{window}'
     if label in data.columns:
@@ -12,7 +18,7 @@ def add_median(fig, data, window=50):
             line=dict(color='red', dash='dot')
         ))
 
-# ➤ Add Average Line
+# Add Average Line
 def add_average(fig, data, window=50):
     label = f'Average_{window}'
     if label in data.columns:
@@ -22,7 +28,7 @@ def add_average(fig, data, window=50):
             line=dict(color='green', dash='dot')
         ))
 
-# ➤ Add Donchian Channel
+# Add Donchian Channel
 def add_donchian_channel(fig, data, window=20):
     upper_label = f'DC_Upper_{window}'
     lower_label = f'DC_Lower_{window}'
@@ -47,7 +53,7 @@ def add_donchian_channel(fig, data, window=20):
             name=f'Donchian Mid {window}'
         ))
 
-# ➤ Add Moving Averages
+# Add Moving Averages
 def add_moving_average(fig, data, window=50):
     label = f'SMA_{window}'
     if label in data.columns:
@@ -57,7 +63,7 @@ def add_moving_average(fig, data, window=50):
             name=label
         ))
 
-# ➤ Add SMA Bands (+/- X%)
+# Add SMA Bands (+/- X%)
 def add_sma_band(fig, data, window=50, percent=2.0):
     upper_label = f'SMA_{window}_upper_{percent}'
     lower_label = f'SMA_{window}_lower_{percent}'
@@ -76,7 +82,7 @@ def add_sma_band(fig, data, window=50, percent=2.0):
             fillcolor='rgba(0, 0, 255, 0.1)'
         ))
 
-# ➤ Add Chaikin Volatility
+# Add Chaikin Volatility
 def add_chaikin_volatility(fig, data, ema_period=100):
     label = f'Chaikin_Volatility_{ema_period}'
     if label in data.columns:
@@ -86,12 +92,12 @@ def add_chaikin_volatility(fig, data, ema_period=100):
             line=dict(color='magenta')
         ))
 
-# ➤ Hauptfunktion zum Erstellen der Candlestick-Charts mit allen Indikatoren
+# Hauptfunktion zum Erstellen der Candlestick-Charts mit allen Indikatoren
 def plot_candlestick_chart(results):
     for name, data in results:
         fig = go.Figure()
 
-        # ➤ Candlestick-Chart
+        # Candlestick-Chart
         fig.add_trace(go.Candlestick(
             x=data.index,
             open=data['Open'], high=data['High'],
@@ -99,7 +105,7 @@ def plot_candlestick_chart(results):
             name="Candles"
         ))
 
-        # ➤ Indikatoren hinzufügen
+        # Indikatoren hinzufügen
         add_median(fig, data, window=50)
         add_average(fig, data, window=50)
         add_donchian_channel(fig, data, window=20)

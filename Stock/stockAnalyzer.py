@@ -30,7 +30,7 @@ def analyze(ticker, name, start, interval):
 
         # MultiIndex auflösen, falls vorhanden
         if isinstance(data.columns, pd.MultiIndex):
-            print(f"[{name}] MultiIndex detected – unpack data...")
+            print(f"[{name}] MultiIndex detected - unpack data...")
             data = data.xs(ticker, axis=1, level=1)
 
         print(f"[{name}] Loaded Columns: {list(data.columns)}")
@@ -74,6 +74,7 @@ if __name__ == "__main__":
                 result = analyze(symbol, info["name"], info["start"], info["interval"])
                 if result:
                     results.append(result)
+                    time.sleep(10)
             if results:
                 pltly.plot_candlestick_chart(results)
             time.sleep(600)  # 10 Minuten warten
