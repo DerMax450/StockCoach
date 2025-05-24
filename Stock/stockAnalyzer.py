@@ -49,7 +49,7 @@ def analyze(ticker, name, start, interval):
         if 'Close' not in data.columns:
             raise KeyError("Column Close is missing!")
         
-        logger.Debug(f"[{name}] Loaded Columns: {list(data.columns)}")
+        logger.debug(f"[{name}] Loaded Columns: {list(data.columns)}")
 
         # Calculate all the indicators
         calsd.calculate_indicators(data)
