@@ -1,9 +1,21 @@
+# Entry file for trading
+# Author: derMax450
+
 import os
 import time
+import dash
+from setupLogger import setup_logger
 import pandas as pd
+from dash import dcc, html
+from dash.dependencies import Input, Output
 import calculateStockData as calsd
 import plotDataPlotly as pltly
 import loadStockData as ldStc
+
+app = dash.Dash(__name__)
+app.title = "StockCoach"
+
+logger = setup_logger("main", "logs/stockAnalyzer.log")
 
 TRACKED_ASSETS = {
     "^NDX": {
@@ -21,26 +33,25 @@ TRACKED_ASSETS = {
 def analyze(ticker, name, start, interval):
     print(f"\n▶ Start analysis for: {name}")
     try:
-        # Stelle sicher, dass der Ordner existiert
+        # Check that dir exists
         os.makedirs("ticker", exist_ok=True)
         data = ldStc.load_or_initialize_data(ticker, name, start, interval)
 
         if data.empty:
             raise ValueError("No data found (DataFrame is empty)")
 
-        # MultiIndex auflösen, falls vorhanden
+        # resolve multiIndex
         if isinstance(data.columns, pd.MultiIndex):
             print(f"[{name}] MultiIndex detected - unpack data...")
             data = data.xs(ticker, axis=1, level=1)
 
-        print(f"[{name}] Loaded Columns: {list(data.columns)}")
-
+        # check if close value is there
         if 'Close' not in data.columns:
             raise KeyError("Column Close is missing!")
+        
+        logger.Debug(f"[{name}] Loaded Columns: {list(data.columns)}")
 
-        if data.empty:
-            raise ValueError("No usable data found.")
-
+        # Calculate all the indicators
         calsd.calculate_indicators(data)
         calsd.detect_crossovers(data)
         calsd.calculate_averages(data)
@@ -59,24 +70,27 @@ def analyze(ticker, name, start, interval):
         return name, data
 
     except Exception as e:
-        print(f"[{name}] Fehler: {e}")
+        logger.error(f"[{name}] Fehler: {e}")
 
 if __name__ == "__main__":
     try:
+        logger.info("Starting the program...")
         while True:
             results = []
             for symbol, info in TRACKED_ASSETS.items():
-                print("Symbol:", symbol)
-                print("Name:", info["name"])
-                print("Startdate:", info["start"])
-                print("Interval:", info["interval"])
-                print("---------")
+                logger.info("Symbol:", symbol)
+                logger.info("Name:", info["name"])
+                logger.info("Startdate:", info["start"])
+                logger.info("Interval:", info["interval"])
+                logger.info("---------")
+
+                # Calc all the values needed for analyze
                 result = analyze(symbol, info["name"], info["start"], info["interval"])
                 if result:
                     results.append(result)
-                    time.sleep(10)
+                    time.sleep(10) # 10 second timeout
             if results:
                 pltly.plot_candlestick_chart(results)
-            time.sleep(600)  # 10 Minuten warten
+            time.sleep(600)  # 10 minute timeout
     except KeyboardInterrupt:
-        print("Auto-Refresh gestoppt vom Benutzer.")
+        logger.Info("Auto-Refresh stopped from user.")

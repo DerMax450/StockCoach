@@ -94,4 +94,39 @@
 - **Risk Management:** Define clear stop-loss and take-profit levels for each strategy.
 - **Documentation:** Maintain thorough documentation for all strategies and calculations for future reference.
 
+# 📬 Sending Telegram Notifications with Python
+
+This guide shows you how to send messages from your Python application directly to your phone using a **Telegram bot**.
+
+---
+
+## Step 1: Create a Telegram Bot
+1. Open the Telegram app.
+2. Search for and start a chat with [@BotFather](https://t.me/BotFather).
+3. Send the command: /newbot
+4. Choose a **name** and a **username** (the username must end in `bot`, e.g., `my_alert_bot`).
+5. BotFather will give you a **bot token**, e.g.: 123456789:ABCDefGhIJKlmNoPQRsTUVwxYZ
+Save this token.
+---
+## Step 2: Get Your Chat ID
+1. Send any message (e.g., "Hello") to your new bot.
+2. Open this URL in your browser (replace `<TOKEN>` with your bot token):
+3. Look for a `chat` object in the JSON response:
+```json
+"chat": {
+  "id": 123456789,
+  ... 
+}
+```
+---
+## Creaete config.json file
+```json
+{
+  "telegram": {
+    "token": "123456789:ABCDefGhIJKlmNoPQRsTUVwxYZ",
+    "chat_id": "987654321"
+  }
+}
+```
+
 ---
