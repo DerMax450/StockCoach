@@ -12,6 +12,8 @@
 ticker/
 Stock/ticker/
 config.json
+__pycache__/
+Stock/__pycache__/plotDataPlotly.cpython-310.pyc
 
 # Subversion
 .svn/
@@ -427,3 +429,4 @@ __pypackages__/
 # Logs
 *.log
 logs/
+

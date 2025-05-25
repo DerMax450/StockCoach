@@ -93,33 +93,30 @@ def add_chaikin_volatility(fig, data, ema_period=100):
         ))
 
 # Hauptfunktion zum Erstellen der Candlestick-Charts mit allen Indikatoren
-def plot_candlestick_chart(results):
-    for name, data in results:
-        fig = go.Figure()
+def plot_candlestick_figure(name, data):
+    fig = go.Figure()
 
-        # Candlestick-Chart
-        fig.add_trace(go.Candlestick(
-            x=data.index,
-            open=data['Open'], high=data['High'],
-            low=data['Low'], close=data['Close'],
-            name="Candles"
-        ))
+    fig.add_trace(go.Candlestick(
+        x=data.index, open=data['Open'], high=data['High'],
+        low=data['Low'], close=data['Close'],
+        name="Candles"
+    ))
 
-        # Indikatoren hinzufügen
-        add_median(fig, data, window=50)
-        add_average(fig, data, window=50)
-        add_donchian_channel(fig, data, window=20)
-        add_moving_average(fig, data, window=50)
-        add_moving_average(fig, data, window=200)
-        add_sma_band(fig, data, window=50, percent=2.0)
-        add_chaikin_volatility(fig, data, ema_period=100)
+    # alle add_* Methoden wie gehabt
+    add_median(fig, data, window=50)
+    add_average(fig, data, window=50)
+    add_donchian_channel(fig, data, window=20)
+    add_moving_average(fig, data, window=50)
+    add_moving_average(fig, data, window=200)
+    add_sma_band(fig, data, window=50, percent=2.0)
+    add_chaikin_volatility(fig, data, ema_period=100)
 
-        fig.update_layout(
-            title=f"{name} - Candlestick Chart",
-            xaxis_title="Datum",
-            yaxis_title="Preis",
-            xaxis_rangeslider_visible=False,
-            hovermode='x unified'
-        )
+    fig.update_layout(
+        title=f"{name} - Candlestick Chart",
+        xaxis_title="Datum",
+        yaxis_title="Preis",
+        xaxis_rangeslider_visible=False,
+        hovermode='x unified'
+    )
+    return fig
 
-        fig.show()
