@@ -10,6 +10,7 @@ from dash.dependencies import Input, Output
 import calculateStockData as calsd
 import plotDataPlotly as pltly
 import loadStockData as ldStc
+from configLoader import load_config
 import fetchX as fetchXData
 import rssFetcher as fetchRSS
 import chatGptAnalyzer as gptAnalyzer
@@ -17,35 +18,20 @@ import sendPushNotification as sendPush
 from dash import no_update
 import time
 
-# Initialisiere Dash
+# Initialize Dash
 app = dash.Dash(__name__)
 app.title = "StockCoach"
 
-# Logger initialisieren
+# Initialize Logger
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
-# Liste der beobachteten Assets
-TRACKED_ASSETS = {
-    "^NDX": {
-        "name": "Nasdaq100",
-        "start": "2020-01-01",
-        "interval": "1d"
-    }
-}
+# List all asseets
+TRACKED_ASSETS = load_config("assets")
 
+# Get all RSS feed links
+feeds = load_config("feeds")
 
-    # "^GSPC": {
-    #     "name": "S&P500",
-    #     "start": "2019-01-01",
-    #     "interval": "1wk"
-    # }
-
-feeds = [
-    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GDAXI&region=US&lang=en-US",
-    "https://www.tagesschau.de/xml/rss2"
-]
-
-# Analysefunktion pro Asset
+# Analyzer function for each asset
 def analyze(ticker, name, start, interval):
     logger.info(f"\n▶ Start analysis for: {name}")
     try:
@@ -65,7 +51,7 @@ def analyze(ticker, name, start, interval):
         logger.debug(f"[{name}] Loaded Columns: {list(data.columns)}")
 
         # Calc Indicators
-        logger.debug("Calculate indicators...")
+        logger.info("Calculate indicators...")
         calsd.calculate_indicators(data)
         calsd.detect_crossovers(data)
         calsd.calculate_averages(data)
@@ -77,14 +63,14 @@ def analyze(ticker, name, start, interval):
         calsd.calculate_chaikin_volatility(data)
 
         # Calc prediction
-        logger.debug("Make ML prediction...")
+        logger.info("Make ML prediction...")
         # calsd.predict_with_random_forest(data)
         # calsd.classify_trend_with_gradient_boosting(data)
         # calsd.predict_with_lstm(data)
 
         # Fetch X Data
-        # logger.debug("Load Tweets from X...")
-        # fetchXData.fetch_new_tweets("realDonaldTrump", "X/trump_tweets.csv", limit=50)
+        #logger.debug("Load Tweets from X...")
+        #fetchXData.fetch_tweets("realDonaldTrump", "X/trump_tweets.csv", limit=50)
 
         # Fetch RSS Data
         # logger.debug("Load some rss feeds...")
@@ -99,7 +85,7 @@ def analyze(ticker, name, start, interval):
         # sendPush.send_telegram_message(report)
 
         # Save data
-        logger.debug("Save the data to file...")
+        logger.info("Save the data to file...")
         filename = os.path.join("ticker", f"{name.replace(' ', '_')}.csv")
         data.to_csv(filename)
 
@@ -150,8 +136,9 @@ def update_all_charts(n):
     results = []
 
     for symbol, info in TRACKED_ASSETS.items():
-        logger.info(f"Analysiere {info['name']} ({symbol})")
+        logger.info(f"Analyze {info['name']} ({symbol})")
         result = analyze(symbol, info["name"], info["start"], info["interval"])
+        # Yahoo Finance rate Limit timeout
         time.sleep(5)
         if result:
             results.append(result)
@@ -184,5 +171,5 @@ def update_all_charts(n):
 
 # Start Server
 if __name__ == "__main__":
-    logger.info("🚀 Starte Dash-Server...")
+    logger.info("🚀 Starting Dash-Server...")
     app.run(debug=True)

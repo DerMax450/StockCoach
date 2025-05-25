@@ -85,11 +85,20 @@ def calculate_median_crossover(data, sma_window=50, median_window=50):
     median_label = f'Median_{median_window}'
     diff_label = f'SMA_vs_Median_{sma_window}_{median_window}'
     cross_label = f'Median_Crossover_{sma_window}_{median_window}'
+    cross_num_label = f'{cross_label}_num'
 
+    # Differenz berechnen
     data[diff_label] = data[sma_label] - data[median_label]
+
+    # Klassifikation als Text (Above/Below/Equal)
     data[cross_label] = data[diff_label].apply(
         lambda x: 'Above' if x > 0 else ('Below' if x < 0 else 'Equal')
     )
+
+    # Numerische Version für Machine Learning
+    mapping = {'Above': 1, 'Below': -1, 'Equal': 0}
+    data[cross_num_label] = data[cross_label].map(mapping)
+
     return data
 
 def calculate_chaikin_volatility(data, ema_period=100):
@@ -100,15 +109,24 @@ def calculate_chaikin_volatility(data, ema_period=100):
     data[chaikin_label] = data[range_label].ewm(span=ema_period, adjust=False).mean()
     return data
 
-## Machine Learning
+## Machine Learning Algorithms
 def predict_with_random_forest(data, future_days=5):
     data = data.copy()
     data['FutureClose'] = data['Close'].shift(-future_days)
     data.dropna(inplace=True)
 
-    features = ['Close', 'Volume'] + [col for col in data.columns if 'SMA' in col or 'Median' in col]
+    features = ['Close', 'Volume'] + [
+        col for col in data.columns
+        if ('SMA' in col or 'Median' in col)
+        and data[col].dtype != 'object'
+    ]
+
     X = data[features]
     y = data['FutureClose']
+
+    if X.empty or y.empty:
+        print("[WARN] Nicht genügend Daten für ML – überspringe Vorhersage.")
+        return data
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, shuffle=False, test_size=0.2)
     model = RandomForestRegressor(n_estimators=100, random_state=42)
@@ -123,7 +141,11 @@ def classify_trend_with_gradient_boosting(data, future_days=1):
     data['TrendUp'] = (data['FutureClose'] > data['Close']).astype(int)
     data.dropna(inplace=True)
 
-    features = ['Close', 'Volume'] + [col for col in data.columns if 'SMA' in col or 'Median' in col]
+    features = ['Close', 'Volume'] + [
+        col for col in data.columns
+        if ('SMA' in col or 'Median' in col)
+        and data[col].dtype != 'object'
+    ]
     X = data[features]
     y = data['TrendUp']
 

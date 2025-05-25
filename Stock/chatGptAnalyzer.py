@@ -1,12 +1,12 @@
 import openai
 import json
 import os
+from configLoader import load_config
 from setupLogger import setup_logger
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
-def setApiKey(apiKey):
-    openai.api_key = os.getenv(apiKey)
+openai.api_key = load_config("openAIKey")
 
 def generate_report(ticker, name, df, prompt_template):
     """

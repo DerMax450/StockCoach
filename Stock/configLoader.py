@@ -15,6 +15,12 @@ def load_config(section=None, config_filename='config.json'):
     :param section: Key of the config section to return (optional)
     :param config_filename: Name of the JSON config file
     :return: config dictionary or specific section
+
+    from configLoader import load_config
+    
+    telegram_config = load_config("telegram")
+    TOKEN = telegram_config["token"]
+    CHAT_ID = telegram_config["chat_id"]
     """
     config_path = os.path.join(os.path.dirname(__file__), config_filename)
 
@@ -28,7 +34,6 @@ def load_config(section=None, config_filename='config.json'):
                 else:
                     raise KeyError(f"'{section}' section not found in config.")
             return config
-
     except FileNotFoundError:
         raise FileNotFoundError(f"⚠️ Configuration file '{config_filename}' not found.")
     except json.JSONDecodeError:

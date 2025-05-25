@@ -24,6 +24,40 @@
     ```
     *(Add any other necessary libraries as needed.)*
 
+- **Create config.json file in root directory:**
+config.json
+``` json
+{
+  "assets": {
+        "^NDX": {
+        "name": "Nasdaq100",
+        "start": "2020-01-01",
+        "interval": "1d"
+    },
+        "^GSPC": {
+        "name": "S&P500",
+        "start": "2019-01-01",
+        "interval": "1wk"
+    }
+  },
+  "feeds":[
+    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GDAXI&region=US&lang=en-US",
+    "https://www.tagesschau.de/xml/rss2"
+  ],
+  "promts":{
+    "promt-analyze": "",
+    "promt-optimize": "",
+    "promt-predict": ""
+  },
+  "telegram": {
+    "token": "",
+    "chat_id": ""
+  },
+  "openAIKey": "",
+  "X-Bearer": ""
+}
+```
+
 ## To-Do List
 
 ### Chart Updates
