@@ -78,11 +78,11 @@ if __name__ == "__main__":
         while True:
             results = []
             for symbol, info in TRACKED_ASSETS.items():
-                logger.info("Symbol:", symbol)
-                logger.info("Name:", info["name"])
-                logger.info("Startdate:", info["start"])
-                logger.info("Interval:", info["interval"])
-                logger.info("---------")
+                logger.info(f"Symbol: {symbol}")
+                logger.info(f"Name: {info['name']}")
+                logger.info(f"Startdate: {info['start']}")
+                logger.info(f"Interval: {info['interval']}")
+                logger.info("---------------------------------")
 
                 # Calc all the values needed for analyze
                 result = analyze(symbol, info["name"], info["start"], info["interval"])

@@ -9,6 +9,8 @@
 *.user
 *.userosscache
 *.sln.docstates
+ticker/
+Stock/ticker/
 config.json
 
 # Subversion
@@ -361,3 +363,67 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# === Python-spezifisch ===
+
+# Bytecode-Dateien
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtuelle Umgebung (kann z. B. auch `.env`, `.venv`, `env`, `venv`, etc. heißen)
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python-Tools
+pip-log.txt
+pip-delete-this-directory.txt
+pytest_cache/
+.tox/
+.nox/
+coverage.*
+.cache/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# PyInstaller
+# Ordner mit temporären Build-Dateien
+build/
+dist/
+*.spec
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# VS Code Python Extensions
+.vscode/settings.json
+.vscode/*.code-workspace
+
+# Spyder-Projekte
+.spyderproject
+.spyproject
+
+# Pycharm
+.idea/
+
+# PEP 582 (used by [python](https://github.com/David-OConnor/pyflow))
+__pypackages__/
+
+# SQLite-Datenbanken, falls generiert
+*.sqlite3
+*.db
+
+# dotenv
+.env
+.env.*
+
+# Logs
+*.log
+logs/
