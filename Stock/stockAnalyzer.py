@@ -10,14 +10,19 @@ from dash.dependencies import Input, Output
 import calculateStockData as calsd
 import plotDataPlotly as pltly
 import loadStockData as ldStc
+import fetchX as fetchXData
+import rssFetcher as fetchRSS
+import chatGptAnalyzer as gptAnalyzer
+import sendPushNotification as sendPush
 from dash import no_update
+import time
 
 # Initialisiere Dash
 app = dash.Dash(__name__)
 app.title = "StockCoach"
 
 # Logger initialisieren
-logger = setup_logger("main", "logs/stockAnalyzer.log")
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 # Liste der beobachteten Assets
 TRACKED_ASSETS = {
@@ -25,17 +30,24 @@ TRACKED_ASSETS = {
         "name": "Nasdaq100",
         "start": "2020-01-01",
         "interval": "1d"
-    },
-    "^GSPC": {
-        "name": "S&P500",
-        "start": "2019-01-01",
-        "interval": "1wk"
     }
 }
 
+
+    # "^GSPC": {
+    #     "name": "S&P500",
+    #     "start": "2019-01-01",
+    #     "interval": "1wk"
+    # }
+
+feeds = [
+    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GDAXI&region=US&lang=en-US",
+    "https://www.tagesschau.de/xml/rss2"
+]
+
 # Analysefunktion pro Asset
 def analyze(ticker, name, start, interval):
-    print(f"\n▶ Start analysis for: {name}")
+    logger.info(f"\n▶ Start analysis for: {name}")
     try:
         os.makedirs("ticker", exist_ok=True)
         data = ldStc.load_or_initialize_data(ticker, name, start, interval)
@@ -44,7 +56,7 @@ def analyze(ticker, name, start, interval):
             raise ValueError("No data found (DataFrame is empty)")
 
         if isinstance(data.columns, pd.MultiIndex):
-            print(f"[{name}] MultiIndex detected – unpacking...")
+            logger.info(f"[{name}] MultiIndex detected – unpacking...")
             data = data.xs(ticker, axis=1, level=1)
 
         if 'Close' not in data.columns:
@@ -53,6 +65,7 @@ def analyze(ticker, name, start, interval):
         logger.debug(f"[{name}] Loaded Columns: {list(data.columns)}")
 
         # Calc Indicators
+        logger.debug("Calculate indicators...")
         calsd.calculate_indicators(data)
         calsd.detect_crossovers(data)
         calsd.calculate_averages(data)
@@ -63,7 +76,30 @@ def analyze(ticker, name, start, interval):
         calsd.calculate_median_crossover(data)
         calsd.calculate_chaikin_volatility(data)
 
+        # Calc prediction
+        logger.debug("Make ML prediction...")
+        # calsd.predict_with_random_forest(data)
+        # calsd.classify_trend_with_gradient_boosting(data)
+        # calsd.predict_with_lstm(data)
+
+        # Fetch X Data
+        # logger.debug("Load Tweets from X...")
+        # fetchXData.fetch_new_tweets("realDonaldTrump", "X/trump_tweets.csv", limit=50)
+
+        # Fetch RSS Data
+        # logger.debug("Load some rss feeds...")
+        # fetchRSS.fetch_and_store_rss_feeds(feeds, output_dir="feeds")
+
+        # Generate chatGPT report
+        # gptAnalyzer.setApiKey()
+        # report = gptAnalyzer.generate_report(ticker, name, data)
+        # with open(os.path.join("ticker", f"{name.replace(' ', '_')}_report.txt"), "w") as f: f.write(report)
+
+        # Send data to Telegram
+        # sendPush.send_telegram_message(report)
+
         # Save data
+        logger.debug("Save the data to file...")
         filename = os.path.join("ticker", f"{name.replace(' ', '_')}.csv")
         data.to_csv(filename)
 
@@ -116,6 +152,7 @@ def update_all_charts(n):
     for symbol, info in TRACKED_ASSETS.items():
         logger.info(f"Analysiere {info['name']} ({symbol})")
         result = analyze(symbol, info["name"], info["start"], info["interval"])
+        time.sleep(5)
         if result:
             results.append(result)
 

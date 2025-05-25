@@ -3,6 +3,9 @@
 
 import requests
 from configLoader import load_config
+from setupLogger import setup_logger
+
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 # Load telegram config
 telegram_config = load_config("telegram")

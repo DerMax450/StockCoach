@@ -7,6 +7,9 @@ from dash.dependencies import Input, Output
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
+from setupLogger import setup_logger
+
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 # Add Median Line
 def add_median(fig, data, window=50):
@@ -92,6 +95,42 @@ def add_chaikin_volatility(fig, data, ema_period=100):
             line=dict(color='magenta')
         ))
 
+def add_rf_prediction(fig, data):
+    if 'RF_Prediction' in data.columns:
+        fig.add_trace(go.Scatter(
+            x=data.index, y=data['RF_Prediction'],
+            name="RF Prediction",
+            mode='lines',
+            line=dict(color='orange', dash='dash')
+        ))
+
+def add_trend_prediction(fig, data):
+    if 'TrendPrediction' in data.columns:
+        color_map = {0: 'red', 1: 'green'}
+        fig.add_trace(go.Scatter(
+            x=data.index, y=data['Close'],
+            name="Trend Prediction",
+            mode='markers',
+            marker=dict(
+                color=data['TrendPrediction'].map(color_map),
+                size=6,
+                symbol='triangle-up'
+            ),
+            showlegend=True
+        ))
+
+def add_lstm_prediction(fig, data, future_days=5):
+    col = f'LSTM_Pred_{future_days}d'
+    if col in data.columns:
+        fig.add_trace(go.Scatter(
+            x=data.index, y=data[col],
+            name=f"LSTM Prediction ({future_days}d)",
+            mode='markers',
+            marker=dict(color='blue', size=10, symbol='x'),
+            showlegend=True
+        ))
+
+
 # Hauptfunktion zum Erstellen der Candlestick-Charts mit allen Indikatoren
 def plot_candlestick_figure(name, data):
     fig = go.Figure()
@@ -110,6 +149,11 @@ def plot_candlestick_figure(name, data):
     add_moving_average(fig, data, window=200)
     add_sma_band(fig, data, window=50, percent=2.0)
     add_chaikin_volatility(fig, data, ema_period=100)
+
+    # ML-Predictions
+    # add_rf_prediction(fig, data)
+    # add_trend_prediction(fig, data)
+    # add_lstm_prediction(fig, data, future_days=5)
 
     fig.update_layout(
         title=f"{name} - Candlestick Chart",

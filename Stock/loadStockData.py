@@ -6,11 +6,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import os
-import time
+from setupLogger import setup_logger
 
-import yfinance as yf
-import pandas as pd
-import os
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 def fetch_new_data(ticker, start_date, intervalPeriod):
     print(f"[{ticker}] Fetching data from {start_date}...")

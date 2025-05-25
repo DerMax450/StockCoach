@@ -5,6 +5,9 @@ import plotly.graph_objects as go
 import os
 import time
 import calculateStockData as cals
+from setupLogger import setup_logger
+
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 def plot_all_data_interactive(results):
     for name, data, bullish, bearish in results:

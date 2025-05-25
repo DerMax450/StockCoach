@@ -17,6 +17,10 @@
     pip3 install plotly
     pip3 install dash
     pip3 install yfinance
+    pip3 install feedparser
+    pip3 install snscrape
+    pip3 install scikit-learn
+    pip3 install tensorflow
     ```
     *(Add any other necessary libraries as needed.)*
 

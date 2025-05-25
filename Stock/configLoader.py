@@ -3,6 +3,9 @@
 
 import json
 import os
+from setupLogger import setup_logger
+
+logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 def load_config(section=None, config_filename='config.json'):
     """
