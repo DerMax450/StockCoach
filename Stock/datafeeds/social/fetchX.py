@@ -2,17 +2,11 @@ import requests
 import pandas as pd
 import os
 from datetime import datetime
-from setupLogger import setup_logger
-import certifi
-from configLoader import load_config
+from services.setupLogger import setup_logger
+from services.configLoader import load_config
 
-logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
-
-# Logging & Zertifikate setzen
+# Logging
 logger = setup_logger(__name__, "logs/stockAnalyzer.log")
-
-logger.info(certifi.where())
-os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
 
 BEARER_TOKEN = load_config("X-Bearer")
 
@@ -27,6 +21,14 @@ def get_user_id(username: str) -> str:
     return r.json()['data']['id']
 
 def fetch_tweets(username: str, csv_file: str, limit: int = 100):
+    """
+    Rate Limit: 100 posts per month
+    Usage:
+    # Fetch X Data
+    logger.debug("Load Tweets from X...")
+    fetchXData.fetch_tweets("realDonaldTrump", "X/trump_tweets.csv", limit=50)
+    """
+
     logger.info(f"Fetching tweets from {username}...")
     
     try:

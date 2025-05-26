@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
-from setupLogger import setup_logger
+from services.setupLogger import setup_logger
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 

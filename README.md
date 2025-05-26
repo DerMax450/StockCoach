@@ -60,8 +60,13 @@ config.json
 
 ## To-Do List
 
-### Chart Updates
-- **Dynamic Charting:** Update charts in real-time instead of re-plotting them entirely.
+- **Fetch Twitter:** Fetch from Twitter API but just for Elon Musk
+- **Fetch RSS Feeds:** Fetch from Financial Times, NASDAQ, SEC, FRED Federal Reserve Economic Data, Finnhub, Yahoo RSS, BEA (Bureau of Economic Analysis), U.S. Treasury, FED and EZB, BaFin
+- **Fetch Truth Social:** Donald Trump
+- **Calender:** Implement Holidays calendar
+- **Saisonality:** Saisonality
+- **EarningCalls:** Earning Calls
+- **CSV Formatting:** Bring all of these data in line
 
 ### Strategy Development
 - **Performance Calculations:**

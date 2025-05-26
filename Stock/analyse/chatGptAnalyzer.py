@@ -1,8 +1,8 @@
 import openai
 import json
 import os
-from configLoader import load_config
-from setupLogger import setup_logger
+from services.configLoader import load_config
+from services.setupLogger import setup_logger
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 

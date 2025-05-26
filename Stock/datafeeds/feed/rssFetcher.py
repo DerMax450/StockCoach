@@ -3,14 +3,20 @@ import csv
 import os
 from datetime import datetime
 from typing import List
-from setupLogger import setup_logger
+from services.setupLogger import setup_logger
+from services.configLoader import load_config
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
-def fetch_and_store_rss_feeds(feed_urls: List[str], output_dir: str = ".", file_prefix: str = "rss_feed"):
+# Get all RSS feed links
+feed_urls = load_config("feeds")
+
+def fetch_and_store_rss_feeds(data, output_dir: str = ".", file_prefix: str = "rss_feed"):
+    logger.info("Load some rss feeds...")
     os.makedirs(output_dir, exist_ok=True)
 
     for url in feed_urls:
+        logger.debug("Fetch from URL: {url}")
         feed = feedparser.parse(url)
         feed_id = url.split("//")[-1].split("/")[0].replace(".", "_")
         csv_file = os.path.join(output_dir, f"{file_prefix}_{feed_id}.csv")
@@ -44,6 +50,6 @@ def fetch_and_store_rss_feeds(feed_urls: List[str], output_dir: str = ".", file_
                 for entry in new_entries:
                     writer.writerow(entry)
 
-            print(f"{len(new_entries)} new entries added to {csv_file}")
+            logger.info(f"{len(new_entries)} new entries added to {csv_file}")
         else:
-            print(f"No new entries for {url}")
+            logger.info(f"No new entries for {url}")

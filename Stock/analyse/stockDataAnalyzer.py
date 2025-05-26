@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import numpy as np
 import tensorflow as tf
-from setupLogger import setup_logger
+from services.setupLogger import setup_logger
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 

@@ -3,18 +3,18 @@
 
 import os
 import dash
-from setupLogger import setup_logger
+from services.setupLogger import setup_logger
 import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
-import calculateStockData as calsd
-import plotDataPlotly as pltly
-import loadStockData as ldStc
-from configLoader import load_config
-import fetchX as fetchXData
-import rssFetcher as fetchRSS
-import chatGptAnalyzer as gptAnalyzer
-import sendPushNotification as sendPush
+import analyse.stockDataAnalyzer as calsd
+import plot.plotDataPlotly as pltly
+import datafeeds.marketData.yfinanceData as ldStc
+from services.configLoader import load_config
+import datafeeds.social.fetchX as fetchXData
+import datafeeds.feed.rssFetcher as fetchRSS
+import analyse.chatGptAnalyzer as gptAnalyzer
+import notifier.sendPushNotification as sendPush
 from dash import no_update
 import time
 
@@ -27,9 +27,6 @@ logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
 # List all asseets
 TRACKED_ASSETS = load_config("assets")
-
-# Get all RSS feed links
-feeds = load_config("feeds")
 
 # Analyzer function for each asset
 def analyze(ticker, name, start, interval):
@@ -68,16 +65,10 @@ def analyze(ticker, name, start, interval):
         # calsd.classify_trend_with_gradient_boosting(data)
         # calsd.predict_with_lstm(data)
 
-        # Fetch X Data
-        #logger.debug("Load Tweets from X...")
-        #fetchXData.fetch_tweets("realDonaldTrump", "X/trump_tweets.csv", limit=50)
-
         # Fetch RSS Data
-        # logger.debug("Load some rss feeds...")
-        # fetchRSS.fetch_and_store_rss_feeds(feeds, output_dir="feeds")
+        # fetchRSS.fetch_and_store_rss_feeds(data, output_dir="feeds")
 
         # Generate chatGPT report
-        # gptAnalyzer.setApiKey()
         # report = gptAnalyzer.generate_report(ticker, name, data)
         # with open(os.path.join("ticker", f"{name.replace(' ', '_')}_report.txt"), "w") as f: f.write(report)
 
