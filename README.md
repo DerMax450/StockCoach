@@ -21,6 +21,7 @@
     pip3 install snscrape
     pip3 install scikit-learn
     pip3 install tensorflow
+    pip3 install jb-news
     ```
     *(Add any other necessary libraries as needed.)*
 
@@ -61,12 +62,54 @@ config.json
 ## To-Do List
 
 - **Fetch Twitter:** Fetch from Twitter API but just for Elon Musk
-- **Fetch RSS Feeds:** Fetch from Financial Times, NASDAQ, SEC, FRED Federal Reserve Economic Data, Finnhub, Yahoo RSS, BEA (Bureau of Economic Analysis), U.S. Treasury, FED and EZB, BaFin
 - **Fetch Truth Social:** Donald Trump
 - **Calender:** Implement Holidays calendar
 - **Saisonality:** Saisonality
 - **EarningCalls:** Earning Calls
 - **CSV Formatting:** Bring all of these data in line
+
+## RSS Feed Links:
+
+- **NASDAQ Earnings:**  
+  [NASDAQ Earnings RSS Feed](https://www.nasdaq.com/feed/rssoutbound?category=Earnings)
+
+- **Financial Times:**  
+  [Financial Times RSS Feed](https://www.ft.com/myft/following/4c25743e-1f2f-4323-9269-d3e87c74de16.rss)
+
+- **NASDAQ Feeds:**  
+  - [NASDAQ General Feed](https://www.nasdaq.com/feed/rssoutbound?category=all)  
+  - [NASDAQ-100 Feed](https://www.nasdaq.com/feed/rssoutbound?category=nasdaq-100)  
+  - [NASDAQ ETFs Feed](https://www.nasdaq.com/feed/rssoutbound?category=ETFs)  
+  - [NASDAQ IPOs Feed](https://www.nasdaq.com/feed/rssoutbound?category=IPOs)  
+  - [NASDAQ Artificial Intelligence Feed](https://www.nasdaq.com/feed/rssoutbound?category=artificial-intelligence)  
+  - [NASDAQ Nvidia Feed](https://www.nasdaq.com/feed/rssoutbound?symbol=NVDA)
+
+- **Reuters:**  
+  [Reuters News Releases RSS Feed](https://ir.thomsonreuters.com/rss/news-releases.xml?items=15)
+
+- **Yahoo Finance:**  
+  [Yahoo Finance RSS Feed](https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GDAXI&region=US&lang=en-US)
+
+- **SEC:**  
+  [SEC Press Releases RSS Feed](https://www.sec.gov/news/pressreleases.rss)
+
+- **FED:**  
+  [Federal Reserve Monetary Policy RSS Feed](https://www.federalreserve.gov/feeds/press_monetary.xml)
+
+- **BEA:**  
+  [Bureau of Economic Analysis RSS Feed](https://apps.bea.gov/rss/rss.xml)
+
+- **EZB:**  
+  [European Central Bank RSS Feed](https://www.ecb.europa.eu/rss/press.html)
+
+- **Wall Street Journal:**  
+  [Wall Street Journal World News RSS Feed](https://feeds.content.dowjones.io/public/rss/RSSWorldNews)
+
+- **Boerse Frankfurt:**  
+  [Boerse Frankfurt News RSS Feed](https://api.boerse-frankfurt.de/v1/feeds/news.rss)
+
+- **Tagesschau:**  
+  [Tagesschau RSS Feed](https://www.tagesschau.de/xml/rss2)
 
 ### Strategy Development
 - **Performance Calculations:**

@@ -7,14 +7,16 @@ from services.setupLogger import setup_logger
 import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
-import analyse.stockDataAnalyzer as calsd
+import analyse.stockDataCalculator as calsd
+import analyse.stockDataPredictor as pred
+import analyse.chatGptAnalyzer as gptAnalyzer
 import plot.plotDataPlotly as pltly
 import datafeeds.marketData.yfinanceData as ldStc
 from services.configLoader import load_config
 import datafeeds.social.fetchX as fetchXData
 import datafeeds.feed.rssFetcher as fetchRSS
-import analyse.chatGptAnalyzer as gptAnalyzer
 import notifier.sendPushNotification as sendPush
+import datafeeds.marketData.economicCalendar as ecoCal
 from dash import no_update
 import time
 
@@ -25,25 +27,19 @@ app.title = "StockCoach"
 # Initialize Logger
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
 
+api_key = load_config("jbNewsAPIKey")
+helper = ecoCal.JBNewsHelper(api_key, offset=7)
+
 # List all asseets
 TRACKED_ASSETS = load_config("assets")
 
-# Analyzer function for each asset
-def analyze(ticker, name, start, interval):
-    logger.info(f"\n▶ Start analysis for: {name}")
+def calculate_indicators(name, data):
+    """
+    Calculate all necessary indicators for the given stock data.
+    This function is called within the analyze function.
+    """
     try:
-        data = ldStc.load_or_initialize_data(ticker, name, start, interval)
-
-        if data.empty:
-            raise ValueError("No data found (DataFrame is empty)")
-
-        if 'Close' not in data.columns:
-            raise KeyError("Column 'Close' is missing!")
-
-        logger.debug(f"[{name}] Loaded Columns: {list(data.columns)}")
-
-        # Calc Indicators
-        logger.info("Calculate indicators...")
+        logger.info("Calculating indicators...")
         calsd.calculate_indicators(data)
         calsd.detect_crossovers(data)
         calsd.calculate_averages(data)
@@ -53,32 +49,84 @@ def analyze(ticker, name, start, interval):
         calsd.calculate_moving_median(data)
         calsd.calculate_median_crossover(data)
         calsd.calculate_chaikin_volatility(data)
+        logger.info("Indicators calculated successfully.")
 
+        logger.info("Save calculated data to file...")
+        filename = os.path.join("ticker", f"{name}_calculated.csv")
+        data.to_csv(filename)
+
+        return data
+    except Exception as e:
+        logger.error(f"Error calculating indicators: {e}")
+
+def calculate_predictions(name, data):
+    """
+    Calculate and log predictions for the given stock data.
+    """
+    try:
         # Calc prediction
         logger.info("Make ML prediction...")
-        #calsd.predict_with_random_forest(data)
-        #calsd.classify_trend_with_gradient_boosting(data)
-        #calsd.predict_with_lstm(data)
+        pred.predict_with_random_forest(data)
+        pred.classify_trend_with_gradient_boosting(data)
+        pred.predict_with_lstm(data)
+        logger.info("Predictions calculated successfully.")
+
+        # Save data
+        logger.info("Save predicted data to file...")
+        filename = os.path.join("ticker", f"{name}_predicted.csv")
+        data.to_csv(filename)
+
+        return data
+    except Exception as e:
+        logger.error(f"Error calculating predictions: {e}")
+
+# Analyzer function for each asset
+def analyze(ticker, name, start, interval):
+    '''Analyze the stock data for a given ticker and return the processed data.
+    Args:
+        ticker (str): The stock ticker symbol.
+        name (str): The name of the stock.
+        start (str): The start date for the analysis.
+        interval (str): The time interval for the stock data.
+    Returns:
+        tuple: A tuple containing the stock name and the processed DataFrame.
+    '''
+
+    logger.info(f"\n▶ Start analysis for: {name}")
+    try:
+        raw_data = ldStc.load_or_initialize_data(ticker, name, start, interval)
+
+        if raw_data.empty:
+            raise ValueError("No data found (DataFrame is empty)")
+
+        if 'Close' not in raw_data.columns:
+            raise KeyError("Column 'Close' is missing!")
+
+        logger.debug(f"[{name}] Loaded Columns: {list(raw_data.columns)}")
+
+        # Calc Indicators
+        calc_data = calculate_indicators(name, raw_data)
+
+        # Calculate Predictions
+        predicted_data = calculate_predictions(name, calc_data)
 
         # Fetch RSS Data
-        # fetchRSS.fetch_and_store_rss_feeds(data, output_dir="feeds")
+        fetchRSS.fetch_and_store_rss_feeds(raw_data, output_dir="ticker")
+
+        #Fetch Economic Calendar
+        today_events = helper.get_calendar(today=True)
 
         # Generate chatGPT report
-        # report = gptAnalyzer.generate_report(ticker, name, data)
-        # with open(os.path.join("ticker", f"{name.replace(' ', '_')}_report.txt"), "w") as f: f.write(report)
+        report = gptAnalyzer.generate_report(ticker, name, calc_data)
+        with open(os.path.join("ticker", f"{name.replace(' ', '_')}_report.txt"), "w") as f: f.write(report)
 
         # Send data to Telegram
         # sendPush.send_telegram_message(report)
 
-        # Save data
-        logger.info("Save the data to file...")
-        filename = os.path.join("ticker", f"{name.replace(' ', '_')}.csv")
-        data.to_csv(filename)
-
-        return name, data
+        return name, raw_data, calc_data, predicted_data
 
     except Exception as e:
-        logger.error(f"[{name}] Fehler: {e}")
+        logger.error(f"[{name}] Error: {e}")
         return None
 
 # Dash-Layout
@@ -134,8 +182,8 @@ def update_all_charts(n):
 
     # Create foreach chart an dcc.Graph
     charts = []
-    for name, data in results:
-        fig = pltly.plot_candlestick_figure(name, data)
+    for name, calc_data, predicted_data in results:
+        fig = pltly.plot_candlestick_figure(name, calc_data)
         chart = html.Div([
             html.H2(name, style={"textAlign": "center", "color": "#333", "marginBottom": "15px"}),
             dcc.Graph(

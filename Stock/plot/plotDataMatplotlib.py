@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import os
 import time
-import analyse.stockDataAnalyzer as cals
+import Stock.analyse.stockDataCalculator as cals
 from services.setupLogger import setup_logger
 
 logger = setup_logger(__name__, f"logs/stockAnalyzer.log")
