@@ -32,15 +32,10 @@ TRACKED_ASSETS = load_config("assets")
 def analyze(ticker, name, start, interval):
     logger.info(f"\n▶ Start analysis for: {name}")
     try:
-        os.makedirs("ticker", exist_ok=True)
         data = ldStc.load_or_initialize_data(ticker, name, start, interval)
 
         if data.empty:
             raise ValueError("No data found (DataFrame is empty)")
-
-        if isinstance(data.columns, pd.MultiIndex):
-            logger.info(f"[{name}] MultiIndex detected – unpacking...")
-            data = data.xs(ticker, axis=1, level=1)
 
         if 'Close' not in data.columns:
             raise KeyError("Column 'Close' is missing!")
@@ -61,9 +56,9 @@ def analyze(ticker, name, start, interval):
 
         # Calc prediction
         logger.info("Make ML prediction...")
-        # calsd.predict_with_random_forest(data)
-        # calsd.classify_trend_with_gradient_boosting(data)
-        # calsd.predict_with_lstm(data)
+        #calsd.predict_with_random_forest(data)
+        #calsd.classify_trend_with_gradient_boosting(data)
+        #calsd.predict_with_lstm(data)
 
         # Fetch RSS Data
         # fetchRSS.fetch_and_store_rss_feeds(data, output_dir="feeds")
@@ -117,7 +112,7 @@ app.layout = html.Div(
     style={"padding": "20px"}
 )
 
-# Callback: analyze and create garph
+# Callback: analyze and create graph
 @app.callback(
     Output('chart-container', 'children'),
     Input('interval-component', 'n_intervals')

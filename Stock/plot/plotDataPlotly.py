@@ -151,9 +151,9 @@ def plot_candlestick_figure(name, data):
     add_chaikin_volatility(fig, data, ema_period=100)
 
     # ML-Predictions
-    # add_rf_prediction(fig, data)
-    # add_trend_prediction(fig, data)
-    # add_lstm_prediction(fig, data, future_days=5)
+    add_rf_prediction(fig, data)
+    add_trend_prediction(fig, data)
+    add_lstm_prediction(fig, data, future_days=5)
 
     fig.update_layout(
         title=f"{name} - Candlestick Chart",
